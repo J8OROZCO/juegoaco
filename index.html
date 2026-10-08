@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La rana y la colonia · Juego ACO</title>
+<style>
+:root{--bg:#0b1f26;--panel:#11303a;--line:#1f4a57;--water:#123a47;--tile:#194150;--pad:#6cc47a;--text:#e8f3ee;--muted:#8fb3ae;--sun:#f6e27a;--ok:#7bc67e;--bad:#ff8a7a}
+*{box-sizing:border-box}
+body{margin:0;color:var(--text);font-family:"Avenir Next","Nunito","Trebuchet MS",sans-serif;font-size:18px;line-height:1.5;min-height:100vh;background:radial-gradient(900px 520px at 85% -10%,#1d4a52 0%,transparent 60%),var(--bg)}
+main{max-width:1000px;margin:0 auto;padding:36px 18px 70px}
+h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:700}
+h1{font-size:2.6rem;margin:0 0 4px;letter-spacing:-.5px;font-style:italic}
+h2{font-size:1.6rem;margin:.1em 0 .5em}
+h3{font-size:1.1rem;margin:22px 0 8px;color:var(--muted);font-weight:600}
+.sub{color:var(--muted);margin:0 0 22px}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:12px 22px;font-weight:700;background:var(--sun);color:#1b2a10;transition:transform .12s}
+button:hover:not(:disabled){transform:translateY(-1px)}
+button.ghost{background:transparent;color:var(--text);border:2px solid var(--line)}
+button.big{width:100%;margin-top:20px;padding:15px;font-size:1.1rem}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+input{width:100%;font:inherit;font-size:1.1rem;padding:12px 16px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--text)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:26px;max-width:640px}
+.lbl{display:block;margin:16px 0 6px;color:var(--muted);font-size:.95rem}
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px}
+.ico{padding:8px 0;font-size:1.8rem;line-height:1.2;background:var(--tile);border:3px solid transparent;border-radius:16px}
+.ico.sel{border-color:var(--sun);background:#24596a;transform:scale(1.08)}
+.ico:disabled{opacity:.2;filter:grayscale(1)}
+.host-link{margin-top:24px;color:var(--muted)}
+.host-link button{margin-left:8px}
+.join,.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);margin-bottom:16px}
+.code{font-family:Georgia,serif;font-size:4.5rem;font-weight:700;letter-spacing:.2em;color:var(--sun);margin:0}
+.chips{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:10px;min-height:48px}
+.chips li{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 16px 6px 8px;display:flex;align-items:center;gap:8px}
+.ic{font-size:1.5rem;line-height:1}
+.teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.tcard{background:var(--panel);border:1px solid var(--line);border-top:8px solid var(--c);border-radius:18px;padding:18px}
+.tcard h3{margin:0 0 10px;color:var(--text)}
+.tcard ul{margin:0;padding:0;list-style:none}
+.tcard li{display:flex;align-items:center;gap:10px;padding:3px 0}
+.lane{display:grid;grid-template-columns:170px 1fr;align-items:center;gap:14px;background:var(--water);border-radius:18px;padding:12px 18px;margin-bottom:10px;border:2px solid transparent;transition:border-color .3s}
+.lane.on{border-color:var(--c)}
+.lname{font-weight:700;border-left:8px solid var(--c);padding-left:10px;line-height:1.25}
+.lname small{display:block;color:var(--muted);font-weight:400}
+.mem{display:block;font-size:1.05rem;letter-spacing:2px;font-weight:400}
+.track{position:relative;height:66px}
+.pads{display:flex;justify-content:space-between;position:absolute;inset:auto 0 4px 0}
+.pad{width:60px;height:40px;border-radius:50%;background:var(--pad);display:grid;place-items:center;border-bottom:4px solid #3f8f4d}
+.frog{position:absolute;top:-2px;width:60px;text-align:center;font-size:2.1rem;left:calc(var(--pos)*(100% - 60px)/3)}
+.frog span{display:inline-block}
+.frog.hop{animation:leap .6s both}
+@keyframes leap{from{left:calc((var(--pos) - 1)*(100% - 60px)/3)}50%{transform:translateY(-28px)}to{left:calc(var(--pos)*(100% - 60px)/3)}}
+#card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px;margin-top:18px}
+#turn{display:inline-block;background:var(--c);color:#14231a;font-weight:700;border-radius:999px;padding:4px 16px}
+.tbar{height:8px;background:var(--water);border-radius:8px;margin:14px 0;overflow:hidden}
+.tbar i{display:block;height:100%;width:100%;background:var(--sun)}
+#opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{text-align:left;background:var(--tile);color:var(--text);font-weight:400;padding:15px 18px;border:2px solid var(--line)}
+.opt:disabled{opacity:1;cursor:default}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#10260f}.opt.bad{background:var(--bad);border-color:var(--bad);color:#2b0d08}
+.rank{list-style:none;padding:0}
+.rank li{display:flex;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-left:10px solid var(--c);border-radius:14px;padding:14px 20px;margin-bottom:8px}
+@media(max-width:640px){#opts{grid-template-columns:1fr}.lane{grid-template-columns:1fr}h1{font-size:2rem}.code{font-size:3.2rem}}
+@media(min-width:1000px){body{font-size:19px}h1{font-size:3rem}}
+@media(prefers-reduced-motion:reduce){.frog.hop{animation:none}button{transition:none}}
+.code.xl{font-size:8rem;line-height:1.1}
+.score{display:grid;grid-template-columns:240px 1fr 90px;align-items:center;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:10px solid var(--c);border-radius:18px;padding:18px 22px;margin-bottom:12px}
+.sn{font-size:1.4rem;font-weight:700}
+.sbar{height:18px;background:var(--water);border-radius:10px;overflow:hidden}
+.sbar i{display:block;height:100%;background:var(--c);transition:width .6s}
+.sp{font-family:Georgia,serif;font-size:3.2rem;font-weight:700;text-align:right;color:var(--c)}
+@media(max-width:640px){.score{grid-template-columns:1fr}.sp{text-align:left}.code.xl{font-size:4rem}}
+</style>
+</head>
+<body>
+<main>
+<h1>La rana y la colonia</h1>
+<p class="sub">Juego en línea de preguntas sobre ACO. Cada acierto hace saltar a la rana de tu equipo.</p>
+
+<section id="cfg" hidden>
+  <h2>Falta conectar Firebase</h2>
+  <p>Abre <code>index.html</code> en un editor de texto y pega tu <code>firebaseConfig</code> en la parte que dice PEGA_AQUI.</p>
+</section>
+
+<section id="home">
+  <div class="panel">
+    <h2>Únete a la partida</h2>
+    <label class="lbl" for="pname">Tu nombre</label>
+    <input id="pname" placeholder="Ana" maxlength="20" autocomplete="off">
+    <label class="lbl" for="pcode">Código de la sala</label>
+    <input id="pcode" placeholder="ABCD" maxlength="4" autocomplete="off" style="text-transform:uppercase;max-width:160px">
+    <span class="lbl">Elige tu animal <b id="picked" style="font-size:1.4rem"></b></span>
+    <div id="picker" class="picker"></div>
+    <button id="join" class="big">Entrar al juego</button>
+    <p id="msg" class="sub" style="margin:10px 0 0;min-height:1.5em"></p>
+  </div>
+  <p class="host-link">¿Eres el presentador?<button id="host" class="ghost">Crear partida</button></p>
+</section>
+
+<section id="room" hidden></section>
+</main>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getDatabase,ref,onValue,set,update,get,push} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const C={
+  apiKey:"AIzaSyA3j1xBztYCZp-w-uc6QHTdLkdk5k0iyJ0",
+  authDomain:"juegoaco.firebaseapp.com",
+  databaseURL:"https://juegoaco-default-rtdb.firebaseio.com",
+  projectId:"juegoaco",
+  appId:"1:676262043026:web:ca9408afd825202a55f54b"
+};
+
+const Q=[
+{q:"¿En qué se inspira la Optimización por Colonia de Hormigas?",a:"En cómo las hormigas buscan comida y dejan rastros",w:["En el enfriamiento lento de los metales","En la evolución de los genes","En el vuelo de las bandadas de aves"],e:"Las hormigas reales dejan feromonas y terminan usando el camino más corto."},
+{q:"¿Quién propuso el Ant System, base de ACO?",a:"Marco Dorigo, con Maniezzo y Colorni",w:["Alan Turing","John Holland","Kennedy y Eberhart"],e:"Dorigo lo planteó en 1992 y el artículo se publicó en 1996."},
+{q:"¿Cuál fue el primer reto clásico del Ant System?",a:"El problema del viajante",w:["El problema de la mochila","Resolver un sudoku","Ordenar una lista de números"],e:"Se buscaba el recorrido más corto que pasara por varias ciudades."},
+{q:"¿Para qué sirve la feromona en el algoritmo?",a:"Guarda memoria de las rutas que fueron útiles",w:["Mide la velocidad del procesador","Reemplaza a la información heurística","Cuenta cuántas hormigas hay"],e:"Es la memoria compartida de la colonia."},
+{q:"¿Para qué sirve la evaporación?",a:"Para olvidar señales viejas y no quedar atrapados en una mala solución",w:["Para que las hormigas caminen más rápido","Para eliminar a las hormigas lentas","Para duplicar la feromona de la mejor ruta"],e:"Sin evaporación, una ruta mediocre podría dominar para siempre."},
+{q:"¿Qué símbolo representa la tasa de evaporación?",a:"ρ (rho)",w:["α (alfa)","β (beta)","Q"],e:"En la fórmula, (1 − ρ) es la parte de feromona que se conserva."},
+{q:"En el refuerzo Q / Lk, ¿qué ruta deposita más feromona?",a:"La más corta, la de menor Lk",w:["La más larga","La que tiene más nodos","La que se recorrió primero"],e:"Dividir entre una longitud pequeña da un refuerzo grande."},
+{q:"¿Por qué se necesita un enrutamiento adaptativo?",a:"Porque el tráfico y el estado de la red cambian mientras transporta datos",w:["Porque las redes no tienen routers","Porque las rutas fijas nunca funcionan","Porque los paquetes eligen su destino al azar"],e:"Los enlaces se congestionan y los nodos pueden fallar."},
+{q:"Ruta 1: S–A–D, corta pero congestionada. Ruta 2: S–B–C–D, larga y fluida. ¿Cuál elige ACO al final?",a:"S–B–C–D",w:["S–A–D","Ninguna, ACO no puede elegir","Las dos con la misma probabilidad siempre"],e:"Los paquetes llegan antes por la ruta fluida y esta acumula más feromona."}
+];
+const TEAMS=[{n:"Equipo Verde",c:"#7bc67e"},{n:"Equipo Rosa",c:"#ff7fa3"},{n:"Equipo Amarillo",c:"#f4d35e"}];
+const SPIN=1300,TIME=30000;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+if(C.databaseURL.indexOf("https")!==0){$("#cfg").hidden=false;$("#home").hidden=true}
+let view=null,db,off=0,code=null,role=null,me=null,S=null,unsub=null,spinIv=null,busy=false;
+if(C.databaseURL.indexOf("https")===0){db=getDatabase(initializeApp(C));onValue(ref(db,".info/serverTimeOffset"),s=>off=s.val()||0)}
+const now=()=>Date.now()+off;
+const R=p=>ref(db,"rooms/"+code+(p?"/"+p:""));
+
+function openRoom(c,r){
+  code=c;role=r;view=null;if(unsub)unsub();
+  localStorage.setItem("aco",JSON.stringify({c,r,me}));
+  $("#home").hidden=true;$("#room").hidden=false;
+  unsub=onValue(R(),s=>{S=s.val();if(!S)return leave("La partida ya no existe.");render();hostLogic()});
+}
+function leave(m){
+  if(unsub)unsub();unsub=null;code=null;S=null;localStorage.removeItem("aco");
+  $("#room").hidden=true;$("#home").hidden=false;$("#msg").textContent=m||"";
+}
+const ICONS=["🐶","🐱","🐭","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐵","🐧","🦉","🦄","🐝","🦋","🐢","🐙","🐬","🦈","🦖","🦜"];
+let pick=null,taken=[];
+function renderPicker(){
+  $("#picker").innerHTML=ICONS.map(i=>`<button type="button" class="ico${i===pick?" sel":""}" data-i="${i}" ${taken.includes(i)?"disabled":""} aria-label="Animal ${i}">${i}</button>`).join("");
+  $("#picked").textContent=pick||"";
+  document.querySelectorAll(".ico").forEach(b=>b.onclick=()=>{pick=b.dataset.i;renderPicker()});
+}
+async function checkTaken(){
+  const c=$("#pcode").value.trim().toUpperCase();
+  if(c.length!==4){taken=[];return renderPicker()}
+  const s=await get(ref(db,"rooms/"+c+"/players"));
+  taken=Object.values(s.val()||{}).map(p=>p.i);
+  if(taken.includes(pick))pick=null;
+  renderPicker();
+}
+async function joinGame(){
+  const n=$("#pname").value.trim().replace(/\s+/g," "),c=$("#pcode").value.trim().toUpperCase(),msg=$("#msg");
+  if(!n)return msg.textContent="Escribe tu nombre para entrar.";
+  if(c.length!==4)return msg.textContent="El código tiene 4 letras.";
+  if(!pick)return msg.textContent="Elige tu animal.";
+  const s=await get(ref(db,"rooms/"+c));
+  if(!s.exists())return msg.textContent="No existe una partida con ese código.";
+  const v=s.val();
+  if(v.phase!=="lobby")return msg.textContent="Esa partida ya empezó.";
+  if(Object.values(v.players||{}).some(p=>p.i===pick)){await checkTaken();return msg.textContent="Ese animal ya lo eligió otra persona. Elige otro."}
+  const pr=push(ref(db,"rooms/"+c+"/players"));await set(pr,{n,i:pick});me=pr.key;openRoom(c,"player");
+}
+async function createGame(){
+  const L="ABCDEFGHJKLMNPQRSTUVWXYZ";let c;
+  do{c=Array.from({length:4},()=>L[Math.floor(Math.random()*L.length)]).join("")}while((await get(ref(db,"rooms/"+c))).exists());
+  await set(ref(db,"rooms/"+c),{phase:"lobby",idx:0,ts:Date.now()});openRoom(c,"host");
+}
+
+function buildOrder(){let o=[];for(let r=0;r<3;r++){let b=shuffle([0,1,2]);while(o.length&&b[0]===o[o.length-1])b=shuffle([0,1,2]);o=o.concat(b)}return o}
+function turnUpdate(idx,order,ks0){
+  const P=S.players,tm=order[idx],mem=Object.keys(P).filter(id=>P[id].t===tm).sort(),ks=(ks0||[0,0,0]).slice();
+  const who=mem[(ks[tm]||0)%mem.length];ks[tm]=(ks[tm]||0)+1;
+  const q=Q[idx],o=shuffle([q.a].concat(q.w));
+  return {idx,phase:"question",ks,turn:{team:tm,who,wn:P[who].n,wi:P[who].i||"",q:q.q,o,c:o.indexOf(q.a),ex:q.e,t0:now(),dl:now()+SPIN+TIME}};
+}
+function drawTeams(){
+  const u={phase:"teams",teams:shuffle(TEAMS)};
+  shuffle(Object.keys(S.players)).forEach((id,i)=>u["players/"+id+"/t"]=i%3);
+  update(R(),u);
+}
+function startGame(){const order=buildOrder();update(R(),Object.assign({order,pos:[0,0,0]},turnUpdate(0,order,[0,0,0])))}
+function nextTurn(){const i=S.idx+1;if(i>=S.order.length)update(R(),{phase:"end"});else update(R(),turnUpdate(i,S.order,S.ks))}
+function newGame(){const u={phase:"lobby",turn:null,order:null,pos:null,ks:null,teams:null,idx:0};Object.keys(S.players).forEach(id=>u["players/"+id+"/t"]=null);update(R(),u)}
+function resolve(i){
+  if(busy)return;busy=true;
+  const t=S.turn,ok=i===t.c,u={phase:"reveal","turn/ok":ok,"turn/pick":i};
+  if(ok)u["pos/"+t.team]=((S.pos||[])[t.team]||0)+1;
+  update(R(),u).then(()=>busy=false);
+}
+function hostLogic(){if(role==="host"&&S.phase==="question"&&S.turn&&S.turn.ans)resolve(S.turn.ans.i)}
+function answer(i){if(S.phase==="question"&&S.turn.who===me&&!S.turn.ans)set(R("turn/ans"),{i,by:me})}
+
+function render(){
+  clearInterval(spinIv);
+  const host=role==="host",P=S.players||{},ids=Object.keys(P),T=S.teams||[];
+  let h=`<div class="top"><b>Sala ${code}</b><span>${ids.length} jugadores</span><span style="display:flex;gap:8px;flex-wrap:wrap">${host?`<button class="ghost" data-v="code" style="padding:6px 14px">${view==="code"?"Volver al juego":"Mostrar código"}</button>`+(T.length?`<button class="ghost" data-v="score" style="padding:6px 14px">${view==="score"?"Volver al juego":"Marcador"}</button>`:""):""}<button class="ghost" id="exit" style="padding:6px 14px">Salir</button></span></div>`;
+  const teamCards=()=>`<div class="teams">${T.map((t,i)=>`<div class="tcard" style="--c:${t.c}"><h3>${t.n}</h3><ul>${ids.filter(id=>P[id].t===i).map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul></div>`).join("")}</div>`;
+  const ph=S.phase;
+  if(host&&view==="code"){
+    h+=`<h2>Entra con este código</h2><p class="code xl">${code}</p><p class="sub">Abre ${esc(location.href.split("?")[0])} y escribe el código.</p><ul class="chips">${ids.map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul>`;
+  }else if(host&&view==="score"){
+    const pos=S.pos||[0,0,0],rows=T.map((t,i)=>({t,i,p:pos[i]||0})).sort((a,b)=>b.p-a.p);
+    h+=`<h2>Marcador en vivo</h2>`+(S.order?`<p class="sub">Pregunta ${Math.min(S.idx+1,S.order.length)} de ${S.order.length}</p>`:"")+rows.map(r=>`<div class="score" style="--c:${r.t.c}"><div class="sn">${r.t.n}<span class="mem">${ids.filter(id=>P[id].t===r.i).map(id=>P[id].i||"").join(" ")}</span></div><div class="sbar"><i style="width:${Math.min(100,r.p/3*100)}%"></i></div><div class="sp">${r.p}</div></div>`).join("");
+    if(S.phase==="reveal")h+=`<div class="row"><button id="next">${S.idx+1>=S.order.length?"Ver resultado":"Siguiente pregunta"}</button></div>`;
+  }else if(ph==="lobby"){
+    h+=host?`<h2>Código para entrar</h2><p class="code">${code}</p><p class="sub">Los jugadores abren ${esc(location.href.split("?")[0])} y escriben este código.</p>`:`<h2>Ya estás dentro, ${(P[me]||{}).i||""} ${esc((P[me]||{}).n||"")}</h2><p class="sub">Esperando a que el presentador sortee los equipos.</p>`;
+    h+=`<h3>Jugadores</h3><ul class="chips">${ids.map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul>`;
+    if(host)h+=`<div class="row"><button id="draw" ${ids.length<3?"disabled":""}>Sortear equipos</button></div><p class="sub" style="margin-top:10px">Hacen falta al menos 3 jugadores.</p>`;
+  }else if(ph==="teams"){
+    const mine=!host&&P[me]&&T[P[me].t];
+    h+=`<h2>${mine?"Tu equipo: "+mine.n:"Equipos sorteados"}</h2>`+teamCards();
+    h+=host?`<div class="row"><button id="start">Empezar juego</button><button id="redo" class="ghost">Sortear de nuevo</button></div>`:`<p class="sub" style="margin-top:14px">Esperando al presentador.</p>`;
+  }else if(ph==="question"||ph==="reveal"){
+    const pos=S.pos||[0,0,0],t=S.turn,tm=T[t.team],rev=ph==="reveal",spin=!rev&&now()<t.t0+SPIN;
+    h+=T.map((x,i)=>`<div class="lane${t.team===i&&!rev?" on":""}" style="--c:${x.c}"><div class="lname">${x.n}<small>${pos[i]||0} puntos</small><span class="mem">${ids.filter(id=>P[id].t===i).map(id=>P[id].i||"").join(" ")}</span></div><div class="track"><div class="pads"><div class="pad"></div><div class="pad"></div><div class="pad"></div><div class="pad">🏁</div></div><div class="frog${rev&&t.ok&&t.team===i?" hop":""}" style="--pos:${pos[i]||0}"><span>🐸</span></div></div></div>`).join("");
+    const mineTurn=!host&&t.who===me;
+    h+=`<div id="card"><span id="turn" style="--c:${tm.c}">${spin?"Sorteando turno…":"Turno: "+tm.n+" · responde "+(t.wi||"")+" "+esc(t.wn)}</span> <span class="sub">Pregunta ${S.idx+1} de ${S.order.length}</span>`;
+    if(!rev)h+=`<div class="tbar"><i id="tfill"></i></div>`;else h+=`<div style="height:14px"></div>`;
+    if(spin){h+=`</div>`}else{
+      h+=`<h2>${esc(t.q)}</h2><div id="opts">${t.o.map((o,i)=>{
+        let c="";if(rev)c=i===t.c?" ok":i===t.pick?" bad":"";
+        return `<button class="opt${c}" data-i="${i}" ${rev||!mineTurn||t.ans?"disabled":""}>${i+1}. ${esc(o)}</button>`}).join("")}</div>`;
+      if(!rev&&!host&&!mineTurn)h+=`<p class="sub" style="margin-top:12px">Responde ${t.wi||""} ${esc(t.wn)}. Pueden ayudarle a pensar.</p>`;
+      if(rev)h+=`<p style="margin-top:16px">${t.ok?"Correcto, la rana salta. ":t.pick<0?"Se acabó el tiempo. ":"No fue esa. "}${esc(t.ex)}</p>`+(host?`<div class="row"><button id="next">${S.idx+1>=S.order.length?"Ver resultado":"Siguiente"}</button></div>`:"");
+      h+=`</div>`;
+    }
+    if(spin){let n=0;spinIv=setInterval(()=>{const x=T[n++%3],e=$("#turn");if(e){e.textContent="Sorteando… "+x.n;e.style.setProperty("--c",x.c)}},90);setTimeout(render,t.t0+SPIN-now()+30)}
+  }else if(ph==="end"){
+    const pos=S.pos||[0,0,0],r=T.map((t,i)=>({t,p:pos[i]||0})).sort((a,b)=>b.p-a.p),top=r.filter(x=>x.p===r[0].p);
+    h+=`<h2>${top.length>1?"Empate: "+top.map(x=>x.t.n).join(" y "):"Gana el "+r[0].t.n}</h2><ul class="rank">${r.map((x,i)=>`<li style="--c:${x.t.c}"><span>${i+1}. ${x.t.n}</span><b>${x.p} / 3</b></li>`).join("")}</ul>`;
+    if(host)h+=`<div class="row"><button id="again">Nueva partida con los mismos jugadores</button></div>`;
+  }
+  $("#room").innerHTML=h;
+  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
+  on("#exit",()=>leave());document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{view=view===b.dataset.v?null:b.dataset.v;render()});on("#draw",drawTeams);on("#redo",drawTeams);on("#start",startGame);on("#next",nextTurn);on("#again",newGame);
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+}
+
+setInterval(()=>{
+  if(!S||S.phase!=="question")return;
+  const t=S.turn,left=(t.dl-now())/TIME,f=$("#tfill");
+  if(f){f.style.width=Math.max(0,Math.min(1,left))*100+"%";f.style.background=left<.27?"var(--bad)":"var(--sun)"}
+  if(role==="host"&&left<=0&&!t.ans)resolve(-1);
+},100);
+document.addEventListener("keydown",e=>{
+  const k=parseInt(e.key,10);if(k>=1&&k<=4&&S&&role==="player"&&S.phase==="question"&&now()>=S.turn.t0+SPIN&&k<=S.turn.o.length)answer(k-1);
+});
+
+if(db){
+  $("#join").onclick=joinGame;$("#host").onclick=createGame;$("#pcode").addEventListener("input",checkTaken);renderPicker();
+  $("#pname").addEventListener("keydown",e=>{if(e.key==="Enter")$("#pcode").value?joinGame():$("#pcode").focus()});
+  $("#pcode").addEventListener("keydown",e=>{if(e.key==="Enter")joinGame()});
+  const q=new URLSearchParams(location.search).get("sala");if(q){$("#pcode").value=q.toUpperCase();checkTaken()}
+  const sv=JSON.parse(localStorage.getItem("aco")||"null");
+  if(sv)get(ref(db,"rooms/"+sv.c)).then(s=>{if(s.exists()){me=sv.me;openRoom(sv.c,sv.r)}else localStorage.removeItem("aco")});
+}
+</script>
+</body>
+</html>
