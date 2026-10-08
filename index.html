@@ -150,11 +150,54 @@ const BANK=[
 ["¿Cuál es una limitación de ACO?","Las hormigas generan tráfico extra",["No funciona con varios caminos","Necesita un servidor central","No puede evaporar feromona"],"También es difícil ajustar α, β y ρ."],
 ["¿Por qué ACO no tiene un punto único de falla?","Cada router decide con información local",["Porque usa un servidor central","Porque no usa feromona","Porque solo tiene una hormiga"],"Es un sistema distribuido."],
 ["Además del viajante, ¿qué problemas abordó pronto el grupo de Dorigo?","Asignación cuadrática y secuenciación de tareas",["Reconocimiento de voz","Compresión de imágenes","Cifrado de mensajes"],"Fueron las primeras extensiones, hacia 1994."],
-["Si la evaporación es casi cero, ¿qué riesgo hay?","Quedarse atrapado en una solución mediocre",["Que las hormigas se pierdan","Que la feromona desaparezca","Que el algoritmo termine al instante"],"Las señales viejas nunca se olvidan."]
+["Si la evaporación es casi cero, ¿qué riesgo hay?","Quedarse atrapado en una solución mediocre",["Que las hormigas se pierdan","Que la feromona desaparezca","Que el algoritmo termine al instante"],"Las señales viejas nunca se olvidan."],
+["¿Qué animal inspira al algoritmo ACO?","La hormiga",["La abeja","La araña","El delfín"],"ACO significa Ant Colony Optimization."],
+["¿Qué significan las siglas ACO?","Ant Colony Optimization",["Automatic Computer Operation","Advanced Network Control","Adaptive Cable Organization"],"En español: Optimización por Colonia de Hormigas."],
+["¿Qué dejan las hormigas en el camino?","Feromonas",["Agua","Luz","Sonido"],"Es un rastro químico que otras hormigas siguen."],
+["¿Qué pasa con la feromona con el paso del tiempo?","Se evapora",["Se duplica sola","Se vuelve más fuerte","Se convierte en comida"],"Por eso se olvidan los caminos malos."],
+["Un camino con mucha feromona resulta…","Más atractivo para las demás hormigas",["Prohibido para las demás","Invisible","Más largo"],"Más feromona atrae a más hormigas."],
+["¿Qué camino prefieren las hormigas con el tiempo?","El más corto",["El más largo","El más oscuro","El más ancho"],"Lo recorren más rápido y lo refuerzan más veces."],
+["El problema del viajante busca…","El recorrido más corto que visite todas las ciudades",["La ciudad más grande","El recorrido más largo","La ciudad más cercana al mar"],"Y además se debe volver al inicio."],
+["¿Una hormiga sola conoce el mapa completo?","No, la inteligencia surge del grupo",["Sí, lo conoce de antemano","Sí, lo recibe de la reina","Solo las hormigas grandes"],"Eso es la inteligencia colectiva."],
+["¿Cómo se llama la idea de que muchos agentes simples resuelven problemas complejos?","Inteligencia colectiva",["Inteligencia emocional","Memoria caché","Aprendizaje supervisado"],"En inglés: swarm intelligence."],
+["¿Quién es considerado el padre de ACO?","Marco Dorigo",["Jean-Louis Deneubourg","Alan Turing","Claude Shannon"],"Lo propuso en su tesis de 1992."],
+["¿En qué país trabajaba Dorigo cuando creó ACO?","Italia",["Japón","Canadá","Brasil"],"En el Politécnico de Milán."],
+["¿En qué década se creó el Ant System?","Años 90",["Años 50","Años 70","Años 2010"],"Fue en 1992."],
+["¿Qué es un router?","Un equipo que reenvía paquetes entre redes",["Un programa de dibujo","Un tipo de cable","Una pantalla"],"Decide por dónde sigue cada paquete."],
+["¿Qué es un paquete en una red?","Un trozo pequeño de información que viaja por la red",["Un cable doblado","Una contraseña","Un tipo de router"],"Un mensaje se divide en muchos paquetes."],
+["¿Qué es el enrutamiento?","Decidir por qué camino viajan los datos",["Cargar el celular","Guardar archivos","Cambiar la contraseña del wifi"],"Cada router mantiene una tabla para decidirlo."],
+["En la analogía con redes, los routers equivalen a…","Las ciudades o nodos del grafo",["Las hormigas","La comida","La evaporación"],"Los enlaces son los caminos entre ellos."],
+["Si un enlace falla, un enrutamiento adaptativo…","Busca otra ruta",["Detiene toda la red","Ignora la falla","Apaga los routers"],"Se recupera solo."],
+["¿Qué significa que un enlace esté congestionado?","Tiene demasiado tráfico y los paquetes tardan",["No tiene cable","Está apagado por seguridad","Solo transmite imágenes"],"Eso aumenta el retardo."],
+["¿Qué pasa con la feromona de un camino muy congestionado?","Recibe menos refuerzo y se evapora",["Se duplica","Se vuelve permanente","No cambia nunca"],"El tráfico migra a otros caminos."],
+["En AntNet, ¿qué es una «hormiga» en la red?","Un paquete pequeño que explora la red",["Un virus informático","Un router especial","Un cable nuevo"],"Viaja al destino y regresa con la información."],
+["¿Qué mide la hormiga adelante mientras viaja?","El retardo del recorrido",["El color de los cables","La temperatura del router","El precio del servicio"],"Con eso la hormiga atrás sabe cuánto reforzar."],
+["ACO puede usarse en…","Telecomunicaciones y logística",["Solo en biología","Solo en cocina","En ningún campo real"],"También en producción y asignación de recursos."],
+["Un camión de reparto que busca la ruta más corta se parece a…","El problema del viajante",["La evaporación","Un router","La feromona"],"Es el mismo tipo de problema."],
+["¿Cuál es una ventaja de ACO?","Se adapta a los cambios",["Nunca necesita ajustes","Siempre da la solución perfecta","No usa memoria"],"La feromona se actualiza con el estado de la red."],
+["ACO es un algoritmo…","Inspirado en la naturaleza",["Basado en cartas","Que usa hormigas reales en el computador","Que no necesita parámetros"],"Las hormigas son virtuales."],
+["¿Cuántas ciudades visita una hormiga en el viajante?","Todas, una sola vez",["Solo la mitad","Solo la más cercana","Las repite varias veces"],"Y luego vuelve al inicio."],
+["¿Qué hace la hormiga al terminar su ruta?","Deposita feromona según qué tan buena fue",["Se detiene para siempre","Borra el mapa","Cambia de nombre"],"Más feromona si la ruta fue corta."],
+["¿Qué ruta recibe más feromona?","La de menor longitud",["La de mayor longitud","La que tiene más curvas","La elegida sin medir"],"Por la fórmula Q / L."],
+["En la fórmula τ ← (1 − ρ)·τ, ¿qué se calcula?","La evaporación",["La distancia","El depósito","La probabilidad"],"Se conserva la fracción (1 − ρ)."],
+["¿Qué letra representa la feromona en las fórmulas?","τ (tau)",["ρ (rho)","η (eta)","Σ (sigma)"],"τij es la feromona entre i y j."],
+["¿Qué representa Q en Δτ = Q / L?","Una constante de refuerzo",["La longitud de la ruta","El número de hormigas","La evaporación"],"L es la longitud de la ruta."],
+["Si dos rutas cuestan 7 y 8, ACO termina favoreciendo…","La de costo 7",["La de costo 8","Ninguna","La más larga"],"Recibe más refuerzo."],
+["El experimento del puente doble tenía…","Dos caminos de distinto largo",["Un solo camino","Tres nidos","Un camino sin comida"],"Entre el nido y la comida."],
+["Si β = 0, ¿qué ignoran las hormigas?","La distancia entre nodos",["La feromona","El nodo de inicio","La evaporación"],"β pesa la visibilidad 1/distancia."],
+["¿Por qué una hormiga no repite ciudades en el viajante?","Porque cada ciudad debe visitarse una sola vez",["Porque no ve","Porque se cansa","Porque la feromona la bloquea"],"Es una regla del problema."],
+["¿Qué significa «metaheurística»?","Una estrategia general para buscar buenas soluciones",["Un tipo de cable","Una fórmula exacta","Un error del programa"],"No garantiza la solución perfecta."],
+["Con 20 ciudades, ¿cuántas rutas hay en el viajante?","Más de 10¹⁷",["Unas 20","Unas 100","Exactamente mil"],"Crece de forma explosiva."],
+["¿Qué es AntHocNet?","Un algoritmo de enrutamiento con hormigas para redes móviles ad hoc",["Un juego de hormigas","Un navegador web","Un antivirus"],"Usa la misma idea de AntNet."],
+["¿Qué ventaja tiene que ACO sea distribuido?","No depende de un único equipo central",["Necesita un servidor enorme","Solo funciona con un router","Es siempre más lento"],"No hay un punto único de falla."],
+["Una limitación de ACO es…","Cuesta ajustar sus parámetros",["No se puede usar en redes","No evapora feromona","Solo sirve con una hormiga"],"α, β y ρ requieren pruebas."],
+["¿Qué pasa si todas las hormigas siguen siempre el mismo rastro sin explorar?","Pueden quedarse en una solución mediocre",["Encuentran siempre la mejor","El problema desaparece","El algoritmo termina sin riesgo"],"Por eso existe la evaporación."]
 ];
 const Q=BANK.map(([q,a,w,e])=>({q,a,w,e}));
 const TEAMS=[{n:"Equipo Verde",c:"#7bc67e"},{n:"Equipo Rosa",c:"#ff7fa3"},{n:"Equipo Amarillo",c:"#f4d35e"}];
 const SPIN=2200,TIME=30000;
+const LEVELS=[["Corta",6],["Normal",12],["Larga",20],["Maratón",30]]; /* aciertos totales que se buscan: con pocos jugadores cada uno debe acertar más veces */
+const TARGET=12;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -208,11 +251,20 @@ async function createGame(){
   await set(ref(db,"rooms/"+c),{phase:"lobby",idx:0,ts:Date.now()});openRoom(c,"host");
 }
 
-/* Una pregunta por jugador. El orden de los jugadores es una permutación aleatoria:
-   todos responden exactamente una vez. Las preguntas también se sortean del banco. */
-function buildQs(n){let qs=[];while(qs.length<n)qs=qs.concat(shuffle(Q.map((_,i)=>i)));return qs.slice(0,n)}
-function turnUpdate(idx,order,qs){
-  const P=S.players,who=order[idx],q=Q[qs[idx]],o=shuffle([q.a].concat(q.w));
+/* Cada jugador debe acertar "need" preguntas (need se adapta al número de jugadores).
+   Se sortea entre los jugadores pendientes, sin repetir dentro de una ronda.
+   Quien falla vuelve al sorteo cuando empieza la ronda siguiente. */
+const needFor=(n,t)=>Math.max(1,Math.ceil((t||TARGET)/n));
+function pickWho(P,need,pool0,last){
+  const pend=Object.keys(P).filter(id=>(P[id].ok||0)<need);
+  if(!pend.length)return null;
+  let pool=(pool0||[]).filter(id=>pend.includes(id)),newRound=false;
+  if(!pool.length){pool=pend.slice();newRound=true}
+  const c=pool.length>1?pool.filter(x=>x!==last):pool,who=c[Math.floor(Math.random()*c.length)];
+  return {who,pool:pool.filter(x=>x!==who),newRound};
+}
+function turnUpdate(idx,who,qs){
+  const P=S.players,q=Q[qs[idx%qs.length]],o=shuffle([q.a].concat(q.w));
   return {idx,phase:"question",turn:{team:P[who].t,who,wn:P[who].n,wi:P[who].i||"",q:q.q,o,c:o.indexOf(q.a),ex:q.e,t0:now(),dl:now()+SPIN+TIME}};
 }
 function drawTeams(){
@@ -221,15 +273,30 @@ function drawTeams(){
   update(R(),u);
 }
 function startGame(){
-  const order=shuffle(Object.keys(S.players)),qs=buildQs(order.length);
-  update(R(),Object.assign({order,qs,pos:[0,0,0]},turnUpdate(0,order,qs)));
+  const ids=Object.keys(S.players),need=needFor(ids.length,S.target),all=Q.map((_,i)=>i),qs=shuffle(all).concat(shuffle(all));
+  const P2={};ids.forEach(id=>P2[id]=Object.assign({},S.players[id],{ok:0}));
+  const pk=pickWho(P2,need,ids,null),u={need,qs,pos:[0,0,0],fin:[],rnd:1,pool:pk.pool};
+  ids.forEach(id=>u["players/"+id+"/ok"]=0);
+  update(R(),Object.assign(u,turnUpdate(0,pk.who,qs)));
 }
-function nextTurn(){const i=S.idx+1;if(i>=S.order.length)update(R(),{phase:"end"});else update(R(),turnUpdate(i,S.order,S.qs))}
-function newGame(){const u={phase:"lobby",turn:null,order:null,qs:null,pos:null,teams:null,idx:0};Object.keys(S.players).forEach(id=>u["players/"+id+"/t"]=null);update(R(),u)}
+function nextTurn(){
+  const pk=pickWho(S.players,S.need,S.pool,S.turn.who);
+  if(!pk)return update(R(),{phase:"end"});
+  update(R(),Object.assign({pool:pk.pool,rnd:(S.rnd||1)+(pk.newRound?1:0)},turnUpdate(S.idx+1,pk.who,S.qs)));
+}
+function newGame(){
+  const u={phase:"lobby",turn:null,order:null,qs:null,pos:null,teams:null,need:null,pool:null,fin:null,rnd:null,idx:0};
+  Object.keys(S.players).forEach(id=>{u["players/"+id+"/t"]=null;u["players/"+id+"/ok"]=null});
+  update(R(),u);
+}
 function resolve(i){
   if(busy)return;busy=true;
   const t=S.turn,ok=i===t.c,u={phase:"reveal","turn/ok":ok,"turn/pick":i};
-  if(ok)u["pos/"+t.team]=((S.pos||[])[t.team]||0)+1;
+  if(ok){
+    const P=S.players,pos=((S.pos||[])[t.team]||0)+1,size=Object.values(P).filter(p=>p.t===t.team).length;
+    u["players/"+t.who+"/ok"]=(P[t.who].ok||0)+1;u["pos/"+t.team]=pos;
+    if(pos>=size*S.need&&!(S.fin||[]).includes(t.team))u.fin=(S.fin||[]).concat([t.team]);
+  }
   update(R(),u).then(()=>busy=false);
 }
 function hostLogic(){if(role==="host"&&S.phase==="question"&&S.turn&&S.turn.ans)resolve(S.turn.ans.i)}
@@ -238,47 +305,48 @@ function answer(i){if(S.phase==="question"&&S.turn.who===me&&!S.turn.ans){docume
 function render(){
   clearInterval(spinIv);
   const host=role==="host",P=S.players||{},ids=Object.keys(P),T=S.teams||[];
-  const sizes=T.map((_,i)=>ids.filter(id=>P[id].t===i).length),n=Math.max(1,...sizes);
-  let h=`<div class="top"><b>Sala ${code}</b><span>${ids.length} jugadores</span><span style="display:flex;gap:8px;flex-wrap:wrap">${host?`<button class="ghost" data-v="code" style="padding:6px 14px">${view==="code"?"Volver al juego":"Mostrar código"}</button>`+(T.length?`<button class="ghost" data-v="score" style="padding:6px 14px">${view==="score"?"Volver al juego":"Marcador"}</button>`:""):""}<button class="ghost" id="exit" style="padding:6px 14px">Salir</button></span></div>`;
+  const need=S.need||needFor(ids.length,S.target),sizes=T.map((_,i)=>ids.filter(id=>P[id].t===i).length),n=Math.max(1,...sizes)*need,done=id=>(P[id].ok||0)>=need,pendIds=ids.filter(id=>!done(id)),pend=pendIds.length,stopBtn=host&&(S.phase==="question"||S.phase==="reveal")?`<button class="ghost" id="stop" style="padding:6px 14px">Terminar ahora</button>`:"";
+  let h=`<div class="top"><b>Sala ${code}</b><span>${ids.length} jugadores</span><span style="display:flex;gap:8px;flex-wrap:wrap">${host?`<button class="ghost" data-v="code" style="padding:6px 14px">${view==="code"?"Volver al juego":"Mostrar código"}</button>`+(T.length?`<button class="ghost" data-v="score" style="padding:6px 14px">${view==="score"?"Volver al juego":"Marcador"}</button>`:""):""}${stopBtn}<button class="ghost" id="exit" style="padding:6px 14px">Salir</button></span></div>`;
   const teamCards=()=>`<div class="teams">${T.map((t,i)=>`<div class="tcard" style="--c:${t.c}"><h3>${t.n}</h3><ul>${ids.filter(id=>P[id].t===i).map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul></div>`).join("")}</div>`;
   const ph=S.phase;
   if(host&&view==="code"){
     h+=`<h2>Entra con este código</h2><p class="code xl">${code}</p><p class="sub">Abre ${esc(location.href.split("?")[0])} y escribe el código.</p><ul class="chips">${ids.map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul>`;
   }else if(host&&view==="score"){
     const pos=S.pos||[0,0,0],rows=T.map((t,i)=>({t,i,p:pos[i]||0})).sort((a,b)=>b.p-a.p);
-    h+=`<h2>Marcador en vivo</h2>`+(S.order?`<p class="sub">Pregunta ${Math.min(S.idx+1,S.order.length)} de ${S.order.length}</p>`:"")+rows.map(r=>`<div class="score" style="--c:${r.t.c}"><div class="sn">${r.t.n}<span class="mem">${ids.filter(id=>P[id].t===r.i).map(id=>P[id].i||"").join(" ")}</span></div><div class="sbar"><i style="width:${Math.min(100,r.p/n*100)}%"></i></div><div class="sp">${r.p}</div></div>`).join("");
-    if(S.phase==="reveal")h+=`<div class="row"><button id="next">${S.idx+1>=S.order.length?"Ver resultado":"Siguiente pregunta"}</button></div>`;
+    h+=`<h2>Marcador en vivo</h2>`+(S.qs?`<p class="sub">Pregunta ${S.idx+1} · Ronda ${S.rnd||1} · Faltan ${pend} jugadores</p>`:"")+rows.map(r=>`<div class="score" style="--c:${r.t.c}"><div class="sn">${r.t.n}<span class="mem">${ids.filter(id=>P[id].t===r.i).map(id=>P[id].i||"").join(" ")}</span></div><div class="sbar"><i style="width:${Math.min(100,r.p/n*100)}%"></i></div><div class="sp">${r.p}</div></div>`).join("");
+    if(S.phase==="reveal")h+=`<div class="row"><button id="next">${pend===0?"Ver resultado":"Siguiente pregunta"}</button></div>`;
   }else if(ph==="lobby"){
     h+=host?`<h2>Código para entrar</h2><p class="code">${code}</p><p class="sub">Los jugadores abren ${esc(location.href.split("?")[0])} y escriben este código.</p>`:`<h2>Ya estás dentro, ${(P[me]||{}).i||""} ${esc((P[me]||{}).n||"")}</h2><p class="sub">Esperando a que el presentador sortee los equipos.</p>`;
     h+=`<h3>Jugadores</h3><ul class="chips">${ids.map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul>`;
-    if(host)h+=`<div class="row"><button id="draw" ${ids.length<3?"disabled":""}>Sortear equipos</button></div><p class="sub" style="margin-top:10px">Hacen falta al menos 3 jugadores. Se harán ${ids.length} preguntas: una por jugador, en orden aleatorio.</p>`;
+    if(host)h+=`<div class="row"><button id="draw" ${ids.length<3?"disabled":""}>Sortear equipos</button></div><p class="sub" style="margin-top:10px">Hacen falta al menos 3 jugadores. Cada jugador deberá acertar ${needFor(ids.length,S.target)} ${needFor(ids.length,S.target)===1?"pregunta":"preguntas"}; quien falle vuelve al sorteo.</p>`;
   }else if(ph==="teams"){
     const mine=!host&&P[me]&&T[P[me].t];
     h+=`<h2>${mine?"Tu equipo: "+mine.n:"Equipos sorteados"}</h2>`+teamCards();
-    h+=host?`<p class="sub" style="margin-top:14px">${ids.length} preguntas: cada jugador responde una, y el orden se sortea al empezar.</p><div class="row"><button id="start">Empezar juego</button><button id="redo" class="ghost">Sortear de nuevo</button></div>`:`<p class="sub" style="margin-top:14px">Esperando al presentador.</p>`;
+    const lv=LEVELS.find(l=>l[1]===(S.target||TARGET))||LEVELS[1],nd=needFor(ids.length,S.target),info=`Duración ${lv[0]}: cada jugador deberá acertar ${nd} ${nd===1?"pregunta":"preguntas"} (mínimo ${nd*ids.length} preguntas en total); quien falle vuelve al sorteo.`;
+    h+=host?`<h3>Duración de la partida</h3><div class="row" style="margin-top:0">${LEVELS.map(l=>`<button data-l="${l[1]}" class="${l[1]===lv[1]?"":"ghost"}">${l[0]}</button>`).join("")}</div><p class="sub" style="margin-top:14px">${info}</p><div class="row"><button id="start">Empezar juego</button><button id="redo" class="ghost">Sortear de nuevo</button></div>`:`<p class="sub" style="margin-top:14px">${info} Esperando al presentador.</p>`;
   }else if(ph==="question"||ph==="reveal"){
     const pos=S.pos||[0,0,0],t=S.turn,tm=T[t.team],rev=ph==="reveal",spin=!rev&&now()<t.t0+SPIN;
-    h+=T.map((x,i)=>`<div class="lane${t.team===i&&!rev?" on":""}" style="--c:${x.c}"><div class="lname">${x.n}<small>${pos[i]||0} de ${sizes[i]} puntos</small><span class="mem">${ids.filter(id=>P[id].t===i).map(id=>P[id].i||"").join(" ")}</span></div><div class="track" style="--n:${n};--fs:${Math.max(1.2,2.1-n*0.07)}rem"><div class="pads">${Array.from({length:n+1},(_,k)=>`<div class="pad">${k===n?"🏁":""}</div>`).join("")}</div><div class="frog${rev&&t.ok&&t.team===i?" hop":""}" style="--pos:${pos[i]||0}"><span>🐸</span></div></div></div>`).join("");
+    h+=T.map((x,i)=>`<div class="lane${t.team===i&&!rev?" on":""}" style="--c:${x.c}"><div class="lname">${x.n}<small>${pos[i]||0} de ${sizes[i]*need} aciertos${(S.fin||[]).includes(i)?" ✅":""}</small><span class="mem">${ids.filter(id=>P[id].t===i).map(id=>(P[id].i||"")+(done(id)?"✔":"")).join(" ")}</span></div><div class="track" style="--n:${n};--fs:${Math.max(1.2,2.1-n*0.07)}rem"><div class="pads">${Array.from({length:n+1},(_,k)=>`<div class="pad">${k===n?"🏁":""}</div>`).join("")}</div><div class="frog${rev&&t.ok&&t.team===i?" hop":""}" style="--pos:${pos[i]||0}"><span>🐸</span></div></div></div>`).join("");
     const mineTurn=!host&&t.who===me;
-    h+=`<div id="card"><span id="turn" style="--c:${tm.c}">${spin?"Sorteando jugador…":"Turno: "+tm.n+" · responde "+(t.wi||"")+" "+esc(t.wn)}</span> <span class="sub">Pregunta ${S.idx+1} de ${S.order.length}</span>`;
+    h+=`<div id="card"><span id="turn" style="--c:${tm.c}">${spin?"Sorteando jugador…":"Turno: "+tm.n+" · responde "+(t.wi||"")+" "+esc(t.wn)}</span> <span class="sub">Pregunta ${S.idx+1} · Ronda ${S.rnd||1} · Faltan ${pend} jugadores</span>`;
     if(!rev)h+=`<div class="tbar"><i id="tfill"></i></div>`;else h+=`<div style="height:14px"></div>`;
     if(spin){h+=`</div>`}else{
       h+=`<h2>${esc(t.q)}</h2><div id="opts">${t.o.map((o,i)=>{
         let c="";if(rev)c=i===t.c?" ok":i===t.pick?" bad":"";else if(t.ans&&t.ans.i===i)c=" pick";
         return `<button class="opt${c}" data-i="${i}" ${rev||!mineTurn||t.ans?"disabled":""}>${i+1}. ${esc(o)}</button>`}).join("")}</div>`;
       if(!rev&&t.ans)h+=`<p class="sub" style="margin-top:12px">Respuesta enviada: ${esc(t.o[t.ans.i])}. Esperando el resultado…</p>`;if(!rev&&!host&&!mineTurn&&!t.ans)h+=`<p class="sub" style="margin-top:12px">Responde ${t.wi||""} ${esc(t.wn)}. Pueden ayudarle a pensar.</p>`;
-      if(rev)h+=`<p style="margin-top:16px">${t.ok?"Correcto, la rana salta. ":t.pick<0?"Se acabó el tiempo. ":"No fue esa. "}${esc(t.ex)}</p>`+(host?`<div class="row"><button id="next">${S.idx+1>=S.order.length?"Ver resultado":"Siguiente"}</button></div>`:"");
+      if(rev)h+=`<p style="margin-top:16px">${t.ok?"Correcto, la rana salta. ":t.pick<0?"Se acabó el tiempo; vuelve al sorteo. ":"No fue esa; vuelve al sorteo. "}${esc(t.ex)}</p>`+(host?`<div class="row"><button id="next">${pend===0?"Ver resultado":"Siguiente"}</button></div>`:"");
       h+=`</div>`;
     }
-    if(spin){let k=0;spinIv=setInterval(()=>{const id=ids[Math.floor(Math.random()*ids.length)],x=P[id],e=$("#turn");k++;if(e&&x){e.textContent="Sorteando… "+(x.i||"")+" "+x.n;e.style.setProperty("--c",(T[x.t]||tm).c)}},90);setTimeout(render,t.t0+SPIN-now()+30)}
+    if(spin){let k=0;spinIv=setInterval(()=>{const id=pendIds[Math.floor(Math.random()*pendIds.length)],x=P[id],e=$("#turn");k++;if(e&&x){e.textContent="Sorteando… "+(x.i||"")+" "+x.n;e.style.setProperty("--c",(T[x.t]||tm).c)}},90);setTimeout(render,t.t0+SPIN-now()+30)}
   }else if(ph==="end"){
-    const pos=S.pos||[0,0,0],r=T.map((t,i)=>({t,p:pos[i]||0,s:sizes[i]||1})).sort((a,b)=>b.p/b.s-a.p/a.s||b.p-a.p),top=r.filter(x=>x.p/x.s===r[0].p/r[0].s);
-    h+=`<h2>${top.length>1?"Empate: "+top.map(x=>x.t.n).join(" y "):"Gana el "+r[0].t.n}</h2><ul class="rank">${r.map((x,i)=>`<li style="--c:${x.t.c}"><span>${i+1}. ${x.t.n}</span><b>${x.p} / ${x.s}</b></li>`).join("")}</ul>`;
+    const pos=S.pos||[0,0,0],fin=S.fin||[],r=T.map((t,i)=>({t,i,p:pos[i]||0,s:(sizes[i]||1)*need,f:fin.indexOf(i)})).sort((a,b)=>((a.f<0)-(b.f<0))||(a.f-b.f)||(b.p/b.s-a.p/a.s)||(b.p-a.p));
+    h+=`<h2>${r[0].f>=0?"Gana el "+r[0].t.n:"Partida terminada: va primero el "+r[0].t.n}</h2><ul class="rank">${r.map((x,j)=>`<li style="--c:${x.t.c}"><span>${j+1}. ${x.t.n}${x.f>=0?" ✅":""}</span><b>${x.p} / ${x.s}</b></li>`).join("")}</ul>`;
     if(host)h+=`<div class="row"><button id="again">Nueva partida con los mismos jugadores</button></div>`;
   }
   $("#room").innerHTML=h;
   const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
-  on("#exit",()=>leave());document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{view=view===b.dataset.v?null:b.dataset.v;render()});on("#draw",drawTeams);on("#redo",drawTeams);on("#start",startGame);on("#next",nextTurn);on("#again",newGame);
+  on("#exit",()=>leave());document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{view=view===b.dataset.v?null:b.dataset.v;render()});on("#draw",drawTeams);on("#redo",drawTeams);on("#start",startGame);on("#next",nextTurn);on("#again",newGame);document.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>update(R(),{target:+b.dataset.l}));on("#stop",()=>{if(confirm("¿Terminar la partida ahora?"))update(R(),{phase:"end"})});
   document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
 }
 
