@@ -73,6 +73,7 @@ input{width:100%;font:inherit;font-size:1.1rem;padding:12px 16px;border-radius:1
 .sbar i{display:block;height:100%;background:var(--c);transition:width .6s}
 .sp{font-family:Georgia,serif;font-size:3.2rem;font-weight:700;text-align:right;color:var(--c)}
 @media(max-width:640px){.score{grid-template-columns:1fr}.sp{text-align:left}.code.xl{font-size:4rem}}
+.opt.pick{border-color:var(--sun);background:#24596a}
 </style>
 </head>
 <body>
@@ -203,7 +204,7 @@ function resolve(i){
   update(R(),u).then(()=>busy=false);
 }
 function hostLogic(){if(role==="host"&&S.phase==="question"&&S.turn&&S.turn.ans)resolve(S.turn.ans.i)}
-function answer(i){if(S.phase==="question"&&S.turn.who===me&&!S.turn.ans)set(R("turn/ans"),{i,by:me})}
+function answer(i){if(S.phase==="question"&&S.turn.who===me&&!S.turn.ans){document.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(j===i)b.classList.add("pick")});set(R("turn/ans"),{i,by:me})}}
 
 function render(){
   clearInterval(spinIv);
@@ -233,9 +234,9 @@ function render(){
     if(!rev)h+=`<div class="tbar"><i id="tfill"></i></div>`;else h+=`<div style="height:14px"></div>`;
     if(spin){h+=`</div>`}else{
       h+=`<h2>${esc(t.q)}</h2><div id="opts">${t.o.map((o,i)=>{
-        let c="";if(rev)c=i===t.c?" ok":i===t.pick?" bad":"";
+        let c="";if(rev)c=i===t.c?" ok":i===t.pick?" bad":"";else if(t.ans&&t.ans.i===i)c=" pick";
         return `<button class="opt${c}" data-i="${i}" ${rev||!mineTurn||t.ans?"disabled":""}>${i+1}. ${esc(o)}</button>`}).join("")}</div>`;
-      if(!rev&&!host&&!mineTurn)h+=`<p class="sub" style="margin-top:12px">Responde ${t.wi||""} ${esc(t.wn)}. Pueden ayudarle a pensar.</p>`;
+      if(!rev&&t.ans)h+=`<p class="sub" style="margin-top:12px">Respuesta enviada: ${esc(t.o[t.ans.i])}. Esperando el resultado…</p>`;if(!rev&&!host&&!mineTurn&&!t.ans)h+=`<p class="sub" style="margin-top:12px">Responde ${t.wi||""} ${esc(t.wn)}. Pueden ayudarle a pensar.</p>`;
       if(rev)h+=`<p style="margin-top:16px">${t.ok?"Correcto, la rana salta. ":t.pick<0?"Se acabó el tiempo. ":"No fue esa. "}${esc(t.ex)}</p>`+(host?`<div class="row"><button id="next">${S.idx+1>=S.order.length?"Ver resultado":"Siguiente"}</button></div>`:"");
       h+=`</div>`;
     }
@@ -253,7 +254,7 @@ function render(){
 
 setInterval(()=>{
   if(!S||S.phase!=="question")return;
-  const t=S.turn,left=(t.dl-now())/TIME,f=$("#tfill");
+  const t=S.turn,left=(t.dl-now())/TIME,f=$("#tfill");if(t.ans)return;
   if(f){f.style.width=Math.max(0,Math.min(1,left))*100+"%";f.style.background=left<.27?"var(--bad)":"var(--sun)"}
   if(role==="host"&&left<=0&&!t.ans)resolve(-1);
 },100);
