@@ -46,13 +46,13 @@ input{width:100%;font:inherit;font-size:1.1rem;padding:12px 16px;border-radius:1
 .lname{font-weight:700;border-left:8px solid var(--c);padding-left:10px;line-height:1.25}
 .lname small{display:block;color:var(--muted);font-weight:400}
 .mem{display:block;font-size:1.05rem;letter-spacing:2px;font-weight:400}
-.track{position:relative;height:66px}
+.track{--w:min(60px,calc(100% / (var(--n) + 2)));position:relative;height:66px}
 .pads{display:flex;justify-content:space-between;position:absolute;inset:auto 0 4px 0}
-.pad{width:60px;height:40px;border-radius:50%;background:var(--pad);display:grid;place-items:center;border-bottom:4px solid #3f8f4d}
-.frog{position:absolute;top:-2px;width:60px;text-align:center;font-size:2.1rem;left:calc(var(--pos)*(100% - 60px)/3)}
+.pad{width:var(--w);height:40px;border-radius:50%;background:var(--pad);display:grid;place-items:center;border-bottom:4px solid #3f8f4d;font-size:.9rem;overflow:hidden}
+.frog{position:absolute;top:-2px;width:var(--w);text-align:center;font-size:var(--fs,2.1rem);left:calc(var(--pos)*(100% - var(--w))/var(--n))}
 .frog span{display:inline-block}
 .frog.hop{animation:leap .6s both}
-@keyframes leap{from{left:calc((var(--pos) - 1)*(100% - 60px)/3)}50%{transform:translateY(-28px)}to{left:calc(var(--pos)*(100% - 60px)/3)}}
+@keyframes leap{from{left:calc((var(--pos) - 1)*(100% - var(--w))/var(--n))}50%{transform:translateY(-28px)}to{left:calc(var(--pos)*(100% - var(--w))/var(--n))}}
 #card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px;margin-top:18px}
 #turn{display:inline-block;background:var(--c);color:#14231a;font-weight:700;border-radius:999px;padding:4px 16px}
 .tbar{height:8px;background:var(--water);border-radius:8px;margin:14px 0;overflow:hidden}
@@ -116,19 +116,45 @@ const C={
   appId:"1:676262043026:web:ca9408afd825202a55f54b"
 };
 
-const Q=[
-{q:"¿En qué se inspira la Optimización por Colonia de Hormigas?",a:"En cómo las hormigas buscan comida y dejan rastros",w:["En el enfriamiento lento de los metales","En la evolución de los genes","En el vuelo de las bandadas de aves"],e:"Las hormigas reales dejan feromonas y terminan usando el camino más corto."},
-{q:"¿Quién propuso el Ant System, base de ACO?",a:"Marco Dorigo, con Maniezzo y Colorni",w:["Alan Turing","John Holland","Kennedy y Eberhart"],e:"Dorigo lo planteó en 1992 y el artículo se publicó en 1996."},
-{q:"¿Cuál fue el primer reto clásico del Ant System?",a:"El problema del viajante",w:["El problema de la mochila","Resolver un sudoku","Ordenar una lista de números"],e:"Se buscaba el recorrido más corto que pasara por varias ciudades."},
-{q:"¿Para qué sirve la feromona en el algoritmo?",a:"Guarda memoria de las rutas que fueron útiles",w:["Mide la velocidad del procesador","Reemplaza a la información heurística","Cuenta cuántas hormigas hay"],e:"Es la memoria compartida de la colonia."},
-{q:"¿Para qué sirve la evaporación?",a:"Para olvidar señales viejas y no quedar atrapados en una mala solución",w:["Para que las hormigas caminen más rápido","Para eliminar a las hormigas lentas","Para duplicar la feromona de la mejor ruta"],e:"Sin evaporación, una ruta mediocre podría dominar para siempre."},
-{q:"¿Qué símbolo representa la tasa de evaporación?",a:"ρ (rho)",w:["α (alfa)","β (beta)","Q"],e:"En la fórmula, (1 − ρ) es la parte de feromona que se conserva."},
-{q:"En el refuerzo Q / Lk, ¿qué ruta deposita más feromona?",a:"La más corta, la de menor Lk",w:["La más larga","La que tiene más nodos","La que se recorrió primero"],e:"Dividir entre una longitud pequeña da un refuerzo grande."},
-{q:"¿Por qué se necesita un enrutamiento adaptativo?",a:"Porque el tráfico y el estado de la red cambian mientras transporta datos",w:["Porque las redes no tienen routers","Porque las rutas fijas nunca funcionan","Porque los paquetes eligen su destino al azar"],e:"Los enlaces se congestionan y los nodos pueden fallar."},
-{q:"Ruta 1: S–A–D, corta pero congestionada. Ruta 2: S–B–C–D, larga y fluida. ¿Cuál elige ACO al final?",a:"S–B–C–D",w:["S–A–D","Ninguna, ACO no puede elegir","Las dos con la misma probabilidad siempre"],e:"Los paquetes llegan antes por la ruta fluida y esta acumula más feromona."}
+/* Banco de preguntas: [pregunta, respuesta correcta, [3 incorrectas], explicación].
+   En cada partida se sortean tantas preguntas como jugadores haya. */
+const BANK=[
+["¿En qué se inspira la Optimización por Colonia de Hormigas?","En cómo las hormigas buscan comida y dejan rastros",["En el enfriamiento lento de los metales","En la evolución de los genes","En el vuelo de las bandadas de aves"],"Las hormigas reales dejan feromonas y terminan usando el camino más corto."],
+["¿Quién propuso el Ant System, base de ACO?","Marco Dorigo, con Maniezzo y Colorni",["Alan Turing","John Holland","Kennedy y Eberhart"],"Dorigo lo planteó en 1992 y el artículo se publicó en 1996."],
+["¿Cuál fue el primer reto clásico del Ant System?","El problema del viajante",["El problema de la mochila","Resolver un sudoku","Ordenar una lista de números"],"Se buscaba el recorrido más corto que pasara por varias ciudades."],
+["¿Para qué sirve la feromona en el algoritmo?","Guarda memoria de las rutas que fueron útiles",["Mide la velocidad del procesador","Reemplaza a la información heurística","Cuenta cuántas hormigas hay"],"Es la memoria compartida de la colonia."],
+["¿Para qué sirve la evaporación?","Para olvidar señales viejas y no quedar atrapados en una mala solución",["Para que las hormigas caminen más rápido","Para eliminar a las hormigas lentas","Para duplicar la feromona de la mejor ruta"],"Sin evaporación, una ruta mediocre podría dominar para siempre."],
+["¿Qué símbolo representa la tasa de evaporación?","ρ (rho)",["α (alfa)","β (beta)","Q"],"En la fórmula, (1 − ρ) es la parte de feromona que se conserva."],
+["En el refuerzo Q / Lk, ¿qué ruta deposita más feromona?","La más corta, la de menor Lk",["La más larga","La que tiene más nodos","La que se recorrió primero"],"Dividir entre una longitud pequeña da un refuerzo grande."],
+["¿Por qué se necesita un enrutamiento adaptativo?","Porque el tráfico y el estado de la red cambian mientras transporta datos",["Porque las redes no tienen routers","Porque las rutas fijas nunca funcionan","Porque los paquetes eligen su destino al azar"],"Los enlaces se congestionan y los nodos pueden fallar."],
+["Ruta 1: S–A–D, corta pero congestionada. Ruta 2: S–B–C–D, larga y fluida. ¿Cuál elige ACO al final?","S–B–C–D",["S–A–D","Ninguna, ACO no puede elegir","Las dos con la misma probabilidad siempre"],"Los paquetes llegan antes por la ruta fluida y esta acumula más feromona."],
+["En la red del ejemplo (A a E), B–D se congestiona y su costo pasa de 3 a 10. ¿Qué ruta termina con más feromona?","A–C–D–E (costo 7)",["A–B–D–E (costo 14)","A–B–E (costo 8)","Todas por igual"],"Es la de menor costo, así que recibe el mayor refuerzo Q/L."],
+["En el experimento del puente doble, ¿qué pasó con el tiempo?","Casi todas las hormigas usaron el camino más corto",["Se repartieron por igual en los dos caminos","Eligieron siempre el primer camino que probaron","Dejaron de buscar comida"],"Sin mapa ni líder, el refuerzo de feromona hizo ganar al camino corto."],
+["¿Quién estudió con hormigas ese experimento en los años 80?","Jean-Louis Deneubourg y colegas",["Marco Dorigo","Alan Turing","Gianni Di Caro"],"Dorigo convirtió la idea en algoritmo después, en 1992."],
+["¿Qué es la estigmergia?","Comunicarse modificando el entorno",["Aprender de la experiencia propia","Mutar soluciones al azar","Enfriar poco a poco un sistema"],"Las hormigas no se hablan: dejan un rastro que otras siguen."],
+["¿Por qué no se prueban todas las rutas del viajante?","El número de rutas crece de forma explosiva",["Las ciudades cambian de lugar","Los computadores no saben sumar distancias","Solo existe una ruta correcta"],"Con solo 20 ciudades hay más de 10¹⁷ rutas posibles."],
+["¿ACO garantiza siempre la solución perfecta?","No, busca soluciones muy buenas en tiempo razonable",["Sí, siempre","Solo con pocas ciudades","Solo si no hay evaporación"],"Por eso se llama metaheurística."],
+["¿Qué es ACO?","Una metaheurística: una estrategia general de optimización",["Una base de datos de rutas","Un protocolo de red","Un lenguaje de programación"],"Muchas hormigas virtuales construyen soluciones y comparten feromona artificial."],
+["¿Qué controla el parámetro β en la regla de decisión?","Cuánto pesa la cercanía (1/distancia)",["Cuánto se evapora la feromona","Cuántas hormigas hay","Cuánta feromona se deposita"],"α pesa la feromona y β pesa la distancia."],
+["Si α es alto, la colonia…","Sigue más el rastro de feromona",["Ignora la feromona","Prefiere siempre lo más cercano","Olvida más rápido"],"α es el peso de la feromona en la probabilidad de elegir."],
+["¿Qué representa η (eta) en la fórmula?","La visibilidad: 1/distancia",["La tasa de evaporación","La feromona acumulada","El número de iteraciones"],"Favorece los caminos cortos."],
+["¿Qué hace cada hormiga en una iteración?","Construye una ruta completa eligiendo nodo a nodo",["Calcula la ruta óptima exacta","Copia la ruta de la anterior","Borra toda la feromona"],"Luego se mide la ruta, se evapora y se deposita feromona."],
+["¿Qué decide una tabla de enrutamiento?","Por qué vecino reenviar un paquete hacia su destino",["Cuánto cuesta el internet","Qué contraseña usa el router","Cuántos usuarios hay conectados"],"Cada router tiene la suya."],
+["¿Qué problema tiene usar un único «mejor» camino?","Puede saturarse mientras otros caminos están libres",["Gasta menos memoria","No sirve en redes pequeñas","Hace que los paquetes se dupliquen"],"Por eso se busca repartir la carga."],
+["En la analogía con redes, ¿qué equivale a la feromona?","La probabilidad en la tabla de enrutamiento",["El ancho de banda del cable","La dirección IP","El tamaño del paquete"],"Se refuerza en los enlaces que dan buenos tiempos."],
+["En una red, ¿qué equivale a la «longitud del camino»?","El retardo o la congestión",["El color del cable","El número de usuarios","El costo del router"],"Más retardo significa menos refuerzo."],
+["En AntNet, ¿qué hace la hormiga hacia atrás?","Regresa y refuerza los enlaces que usó",["Borra la tabla del router","Lleva los datos del usuario","Cierra la conexión"],"Refuerza más si el viaje fue rápido."],
+["¿Quiénes crearon AntNet?","Gianni Di Caro y Marco Dorigo",["Deneubourg y Goss","Turing y Shannon","Kennedy y Eberhart"],"Lo presentaron a finales de los años 90."],
+["¿Dónde se probaron hormigas para balancear carga en los años 90?","En redes telefónicas",["En consolas de videojuegos","En el GPS de los satélites","En impresoras láser"],"Hubo trabajos de HP y British Telecom."],
+["¿Cuál es una ventaja de ACO en redes?","Se adapta a cambios sin reprogramar",["Garantiza tiempos exactos","No genera tráfico extra","Converge al instante"],"La feromona se actualiza sola con el estado de la red."],
+["¿Cuál es una limitación de ACO?","Las hormigas generan tráfico extra",["No funciona con varios caminos","Necesita un servidor central","No puede evaporar feromona"],"También es difícil ajustar α, β y ρ."],
+["¿Por qué ACO no tiene un punto único de falla?","Cada router decide con información local",["Porque usa un servidor central","Porque no usa feromona","Porque solo tiene una hormiga"],"Es un sistema distribuido."],
+["Además del viajante, ¿qué problemas abordó pronto el grupo de Dorigo?","Asignación cuadrática y secuenciación de tareas",["Reconocimiento de voz","Compresión de imágenes","Cifrado de mensajes"],"Fueron las primeras extensiones, hacia 1994."],
+["Si la evaporación es casi cero, ¿qué riesgo hay?","Quedarse atrapado en una solución mediocre",["Que las hormigas se pierdan","Que la feromona desaparezca","Que el algoritmo termine al instante"],"Las señales viejas nunca se olvidan."]
 ];
+const Q=BANK.map(([q,a,w,e])=>({q,a,w,e}));
 const TEAMS=[{n:"Equipo Verde",c:"#7bc67e"},{n:"Equipo Rosa",c:"#ff7fa3"},{n:"Equipo Amarillo",c:"#f4d35e"}];
-const SPIN=1300,TIME=30000;
+const SPIN=2200,TIME=30000;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -182,21 +208,24 @@ async function createGame(){
   await set(ref(db,"rooms/"+c),{phase:"lobby",idx:0,ts:Date.now()});openRoom(c,"host");
 }
 
-function buildOrder(){let o=[];for(let r=0;r<3;r++){let b=shuffle([0,1,2]);while(o.length&&b[0]===o[o.length-1])b=shuffle([0,1,2]);o=o.concat(b)}return o}
-function turnUpdate(idx,order,ks0){
-  const P=S.players,tm=order[idx],mem=Object.keys(P).filter(id=>P[id].t===tm).sort(),ks=(ks0||[0,0,0]).slice();
-  const who=mem[(ks[tm]||0)%mem.length];ks[tm]=(ks[tm]||0)+1;
-  const q=Q[idx],o=shuffle([q.a].concat(q.w));
-  return {idx,phase:"question",ks,turn:{team:tm,who,wn:P[who].n,wi:P[who].i||"",q:q.q,o,c:o.indexOf(q.a),ex:q.e,t0:now(),dl:now()+SPIN+TIME}};
+/* Una pregunta por jugador. El orden de los jugadores es una permutación aleatoria:
+   todos responden exactamente una vez. Las preguntas también se sortean del banco. */
+function buildQs(n){let qs=[];while(qs.length<n)qs=qs.concat(shuffle(Q.map((_,i)=>i)));return qs.slice(0,n)}
+function turnUpdate(idx,order,qs){
+  const P=S.players,who=order[idx],q=Q[qs[idx]],o=shuffle([q.a].concat(q.w));
+  return {idx,phase:"question",turn:{team:P[who].t,who,wn:P[who].n,wi:P[who].i||"",q:q.q,o,c:o.indexOf(q.a),ex:q.e,t0:now(),dl:now()+SPIN+TIME}};
 }
 function drawTeams(){
   const u={phase:"teams",teams:shuffle(TEAMS)};
   shuffle(Object.keys(S.players)).forEach((id,i)=>u["players/"+id+"/t"]=i%3);
   update(R(),u);
 }
-function startGame(){const order=buildOrder();update(R(),Object.assign({order,pos:[0,0,0]},turnUpdate(0,order,[0,0,0])))}
-function nextTurn(){const i=S.idx+1;if(i>=S.order.length)update(R(),{phase:"end"});else update(R(),turnUpdate(i,S.order,S.ks))}
-function newGame(){const u={phase:"lobby",turn:null,order:null,pos:null,ks:null,teams:null,idx:0};Object.keys(S.players).forEach(id=>u["players/"+id+"/t"]=null);update(R(),u)}
+function startGame(){
+  const order=shuffle(Object.keys(S.players)),qs=buildQs(order.length);
+  update(R(),Object.assign({order,qs,pos:[0,0,0]},turnUpdate(0,order,qs)));
+}
+function nextTurn(){const i=S.idx+1;if(i>=S.order.length)update(R(),{phase:"end"});else update(R(),turnUpdate(i,S.order,S.qs))}
+function newGame(){const u={phase:"lobby",turn:null,order:null,qs:null,pos:null,teams:null,idx:0};Object.keys(S.players).forEach(id=>u["players/"+id+"/t"]=null);update(R(),u)}
 function resolve(i){
   if(busy)return;busy=true;
   const t=S.turn,ok=i===t.c,u={phase:"reveal","turn/ok":ok,"turn/pick":i};
@@ -209,6 +238,7 @@ function answer(i){if(S.phase==="question"&&S.turn.who===me&&!S.turn.ans){docume
 function render(){
   clearInterval(spinIv);
   const host=role==="host",P=S.players||{},ids=Object.keys(P),T=S.teams||[];
+  const sizes=T.map((_,i)=>ids.filter(id=>P[id].t===i).length),n=Math.max(1,...sizes);
   let h=`<div class="top"><b>Sala ${code}</b><span>${ids.length} jugadores</span><span style="display:flex;gap:8px;flex-wrap:wrap">${host?`<button class="ghost" data-v="code" style="padding:6px 14px">${view==="code"?"Volver al juego":"Mostrar código"}</button>`+(T.length?`<button class="ghost" data-v="score" style="padding:6px 14px">${view==="score"?"Volver al juego":"Marcador"}</button>`:""):""}<button class="ghost" id="exit" style="padding:6px 14px">Salir</button></span></div>`;
   const teamCards=()=>`<div class="teams">${T.map((t,i)=>`<div class="tcard" style="--c:${t.c}"><h3>${t.n}</h3><ul>${ids.filter(id=>P[id].t===i).map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul></div>`).join("")}</div>`;
   const ph=S.phase;
@@ -216,21 +246,21 @@ function render(){
     h+=`<h2>Entra con este código</h2><p class="code xl">${code}</p><p class="sub">Abre ${esc(location.href.split("?")[0])} y escribe el código.</p><ul class="chips">${ids.map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul>`;
   }else if(host&&view==="score"){
     const pos=S.pos||[0,0,0],rows=T.map((t,i)=>({t,i,p:pos[i]||0})).sort((a,b)=>b.p-a.p);
-    h+=`<h2>Marcador en vivo</h2>`+(S.order?`<p class="sub">Pregunta ${Math.min(S.idx+1,S.order.length)} de ${S.order.length}</p>`:"")+rows.map(r=>`<div class="score" style="--c:${r.t.c}"><div class="sn">${r.t.n}<span class="mem">${ids.filter(id=>P[id].t===r.i).map(id=>P[id].i||"").join(" ")}</span></div><div class="sbar"><i style="width:${Math.min(100,r.p/3*100)}%"></i></div><div class="sp">${r.p}</div></div>`).join("");
+    h+=`<h2>Marcador en vivo</h2>`+(S.order?`<p class="sub">Pregunta ${Math.min(S.idx+1,S.order.length)} de ${S.order.length}</p>`:"")+rows.map(r=>`<div class="score" style="--c:${r.t.c}"><div class="sn">${r.t.n}<span class="mem">${ids.filter(id=>P[id].t===r.i).map(id=>P[id].i||"").join(" ")}</span></div><div class="sbar"><i style="width:${Math.min(100,r.p/n*100)}%"></i></div><div class="sp">${r.p}</div></div>`).join("");
     if(S.phase==="reveal")h+=`<div class="row"><button id="next">${S.idx+1>=S.order.length?"Ver resultado":"Siguiente pregunta"}</button></div>`;
   }else if(ph==="lobby"){
     h+=host?`<h2>Código para entrar</h2><p class="code">${code}</p><p class="sub">Los jugadores abren ${esc(location.href.split("?")[0])} y escriben este código.</p>`:`<h2>Ya estás dentro, ${(P[me]||{}).i||""} ${esc((P[me]||{}).n||"")}</h2><p class="sub">Esperando a que el presentador sortee los equipos.</p>`;
     h+=`<h3>Jugadores</h3><ul class="chips">${ids.map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul>`;
-    if(host)h+=`<div class="row"><button id="draw" ${ids.length<3?"disabled":""}>Sortear equipos</button></div><p class="sub" style="margin-top:10px">Hacen falta al menos 3 jugadores.</p>`;
+    if(host)h+=`<div class="row"><button id="draw" ${ids.length<3?"disabled":""}>Sortear equipos</button></div><p class="sub" style="margin-top:10px">Hacen falta al menos 3 jugadores. Se harán ${ids.length} preguntas: una por jugador, en orden aleatorio.</p>`;
   }else if(ph==="teams"){
     const mine=!host&&P[me]&&T[P[me].t];
     h+=`<h2>${mine?"Tu equipo: "+mine.n:"Equipos sorteados"}</h2>`+teamCards();
-    h+=host?`<div class="row"><button id="start">Empezar juego</button><button id="redo" class="ghost">Sortear de nuevo</button></div>`:`<p class="sub" style="margin-top:14px">Esperando al presentador.</p>`;
+    h+=host?`<p class="sub" style="margin-top:14px">${ids.length} preguntas: cada jugador responde una, y el orden se sortea al empezar.</p><div class="row"><button id="start">Empezar juego</button><button id="redo" class="ghost">Sortear de nuevo</button></div>`:`<p class="sub" style="margin-top:14px">Esperando al presentador.</p>`;
   }else if(ph==="question"||ph==="reveal"){
     const pos=S.pos||[0,0,0],t=S.turn,tm=T[t.team],rev=ph==="reveal",spin=!rev&&now()<t.t0+SPIN;
-    h+=T.map((x,i)=>`<div class="lane${t.team===i&&!rev?" on":""}" style="--c:${x.c}"><div class="lname">${x.n}<small>${pos[i]||0} puntos</small><span class="mem">${ids.filter(id=>P[id].t===i).map(id=>P[id].i||"").join(" ")}</span></div><div class="track"><div class="pads"><div class="pad"></div><div class="pad"></div><div class="pad"></div><div class="pad">🏁</div></div><div class="frog${rev&&t.ok&&t.team===i?" hop":""}" style="--pos:${pos[i]||0}"><span>🐸</span></div></div></div>`).join("");
+    h+=T.map((x,i)=>`<div class="lane${t.team===i&&!rev?" on":""}" style="--c:${x.c}"><div class="lname">${x.n}<small>${pos[i]||0} de ${sizes[i]} puntos</small><span class="mem">${ids.filter(id=>P[id].t===i).map(id=>P[id].i||"").join(" ")}</span></div><div class="track" style="--n:${n};--fs:${Math.max(1.2,2.1-n*0.07)}rem"><div class="pads">${Array.from({length:n+1},(_,k)=>`<div class="pad">${k===n?"🏁":""}</div>`).join("")}</div><div class="frog${rev&&t.ok&&t.team===i?" hop":""}" style="--pos:${pos[i]||0}"><span>🐸</span></div></div></div>`).join("");
     const mineTurn=!host&&t.who===me;
-    h+=`<div id="card"><span id="turn" style="--c:${tm.c}">${spin?"Sorteando turno…":"Turno: "+tm.n+" · responde "+(t.wi||"")+" "+esc(t.wn)}</span> <span class="sub">Pregunta ${S.idx+1} de ${S.order.length}</span>`;
+    h+=`<div id="card"><span id="turn" style="--c:${tm.c}">${spin?"Sorteando jugador…":"Turno: "+tm.n+" · responde "+(t.wi||"")+" "+esc(t.wn)}</span> <span class="sub">Pregunta ${S.idx+1} de ${S.order.length}</span>`;
     if(!rev)h+=`<div class="tbar"><i id="tfill"></i></div>`;else h+=`<div style="height:14px"></div>`;
     if(spin){h+=`</div>`}else{
       h+=`<h2>${esc(t.q)}</h2><div id="opts">${t.o.map((o,i)=>{
@@ -240,10 +270,10 @@ function render(){
       if(rev)h+=`<p style="margin-top:16px">${t.ok?"Correcto, la rana salta. ":t.pick<0?"Se acabó el tiempo. ":"No fue esa. "}${esc(t.ex)}</p>`+(host?`<div class="row"><button id="next">${S.idx+1>=S.order.length?"Ver resultado":"Siguiente"}</button></div>`:"");
       h+=`</div>`;
     }
-    if(spin){let n=0;spinIv=setInterval(()=>{const x=T[n++%3],e=$("#turn");if(e){e.textContent="Sorteando… "+x.n;e.style.setProperty("--c",x.c)}},90);setTimeout(render,t.t0+SPIN-now()+30)}
+    if(spin){let k=0;spinIv=setInterval(()=>{const id=ids[Math.floor(Math.random()*ids.length)],x=P[id],e=$("#turn");k++;if(e&&x){e.textContent="Sorteando… "+(x.i||"")+" "+x.n;e.style.setProperty("--c",(T[x.t]||tm).c)}},90);setTimeout(render,t.t0+SPIN-now()+30)}
   }else if(ph==="end"){
-    const pos=S.pos||[0,0,0],r=T.map((t,i)=>({t,p:pos[i]||0})).sort((a,b)=>b.p-a.p),top=r.filter(x=>x.p===r[0].p);
-    h+=`<h2>${top.length>1?"Empate: "+top.map(x=>x.t.n).join(" y "):"Gana el "+r[0].t.n}</h2><ul class="rank">${r.map((x,i)=>`<li style="--c:${x.t.c}"><span>${i+1}. ${x.t.n}</span><b>${x.p} / 3</b></li>`).join("")}</ul>`;
+    const pos=S.pos||[0,0,0],r=T.map((t,i)=>({t,p:pos[i]||0,s:sizes[i]||1})).sort((a,b)=>b.p/b.s-a.p/a.s||b.p-a.p),top=r.filter(x=>x.p/x.s===r[0].p/r[0].s);
+    h+=`<h2>${top.length>1?"Empate: "+top.map(x=>x.t.n).join(" y "):"Gana el "+r[0].t.n}</h2><ul class="rank">${r.map((x,i)=>`<li style="--c:${x.t.c}"><span>${i+1}. ${x.t.n}</span><b>${x.p} / ${x.s}</b></li>`).join("")}</ul>`;
     if(host)h+=`<div class="row"><button id="again">Nueva partida con los mismos jugadores</button></div>`;
   }
   $("#room").innerHTML=h;
