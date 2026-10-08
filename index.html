@@ -74,6 +74,16 @@ input{width:100%;font:inherit;font-size:1.1rem;padding:12px 16px;border-radius:1
 .sp{font-family:Georgia,serif;font-size:3.2rem;font-weight:700;text-align:right;color:var(--c)}
 @media(max-width:640px){.score{grid-template-columns:1fr}.sp{text-align:left}.code.xl{font-size:4rem}}
 .opt.pick{border-color:var(--sun);background:#24596a}
+.win{text-align:center;background:var(--panel);border:1px solid var(--line);border-top:10px solid var(--c);border-radius:26px;padding:30px 18px;margin-bottom:20px;box-shadow:0 0 60px -20px var(--c)}
+.trophy{font-size:5rem;line-height:1;animation:bob 2s ease-in-out infinite}
+.wn{font-size:clamp(2rem,6vw,3.6rem);color:var(--c);margin:.1em 0 .3em}
+.wm{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}
+.wp{background:var(--tile);border-radius:999px;padding:6px 16px 6px 8px;display:flex;align-items:center;gap:8px}
+.wf{font-size:3rem}
+@keyframes bob{50%{transform:translateY(-10px) rotate(-4deg)}}
+.fall{position:fixed;top:-40px;font-size:1.8rem;pointer-events:none;animation:fall linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.trophy{animation:none}.fall{display:none}}
 </style>
 </head>
 <body>
@@ -301,9 +311,12 @@ function resolve(i){
 }
 function hostLogic(){if(role==="host"&&S.phase==="question"&&S.turn&&S.turn.ans)resolve(S.turn.ans.i)}
 function answer(i){if(S.phase==="question"&&S.turn.who===me&&!S.turn.ans){document.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(j===i)b.classList.add("pick")});set(R("turn/ans"),{i,by:me})}}
-
+function closeRoom(){if(!confirm("¿Cerrar la sala? Los jugadores volverán al inicio."))return;const c=code;leave();set(ref(db,"rooms/"+c),null)}
+function exitPlayer(){const c=code,id=me;leave();set(ref(db,"rooms/"+c+"/players/"+id),null)}
+function confetti(){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;for(let i=0;i<40;i++){const e=document.createElement("span");e.className="fall";e.textContent=["🐸","🐜","🏆","🍃"][i%4];e.style.left=Math.random()*100+"vw";e.style.animationDuration=3+Math.random()*3+"s";e.style.animationDelay=Math.random()*1.5+"s";document.body.appendChild(e);setTimeout(()=>e.remove(),7500)}}              
 function render(){
   clearInterval(spinIv);
+  if(window._ph!==S.phase){window._ph=S.phase;if(S.phase==="end")view=null;window._cf=0}
   const host=role==="host",P=S.players||{},ids=Object.keys(P),T=S.teams||[];
   const need=S.need||needFor(ids.length,S.target),sizes=T.map((_,i)=>ids.filter(id=>P[id].t===i).length),n=Math.max(1,...sizes)*need,done=id=>(P[id].ok||0)>=need,pendIds=ids.filter(id=>!done(id)),pend=pendIds.length,stopBtn=host&&(S.phase==="question"||S.phase==="reveal")?`<button class="ghost" id="stop" style="padding:6px 14px">Terminar ahora</button>`:"";
   let h=`<div class="top"><b>Sala ${code}</b><span>${ids.length} jugadores</span><span style="display:flex;gap:8px;flex-wrap:wrap">${host?`<button class="ghost" data-v="code" style="padding:6px 14px">${view==="code"?"Volver al juego":"Mostrar código"}</button>`+(T.length?`<button class="ghost" data-v="score" style="padding:6px 14px">${view==="score"?"Volver al juego":"Marcador"}</button>`:""):""}${stopBtn}<button class="ghost" id="exit" style="padding:6px 14px">Salir</button></span></div>`;
@@ -311,7 +324,7 @@ function render(){
   const ph=S.phase;
   if(host&&view==="code"){
     h+=`<h2>Entra con este código</h2><p class="code xl">${code}</p><p class="sub">Abre ${esc(location.href.split("?")[0])} y escribe el código.</p><ul class="chips">${ids.map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</li>`).join("")}</ul>`;
-  }else if(host&&view==="score"){
+ }else if(host&&view==="score"&&ph!=="end"){
     const pos=S.pos||[0,0,0],rows=T.map((t,i)=>({t,i,p:pos[i]||0})).sort((a,b)=>b.p-a.p);
     h+=`<h2>Marcador en vivo</h2>`+(S.qs?`<p class="sub">Pregunta ${S.idx+1} · Ronda ${S.rnd||1} · Faltan ${pend} jugadores</p>`:"")+rows.map(r=>`<div class="score" style="--c:${r.t.c}"><div class="sn">${r.t.n}<span class="mem">${ids.filter(id=>P[id].t===r.i).map(id=>P[id].i||"").join(" ")}</span></div><div class="sbar"><i style="width:${Math.min(100,r.p/n*100)}%"></i></div><div class="sp">${r.p}</div></div>`).join("");
     if(S.phase==="reveal")h+=`<div class="row"><button id="next">${pend===0?"Ver resultado":"Siguiente pregunta"}</button></div>`;
@@ -340,13 +353,23 @@ function render(){
     }
     if(spin){let k=0;spinIv=setInterval(()=>{const id=pendIds[Math.floor(Math.random()*pendIds.length)],x=P[id],e=$("#turn");k++;if(e&&x){e.textContent="Sorteando… "+(x.i||"")+" "+x.n;e.style.setProperty("--c",(T[x.t]||tm).c)}},90);setTimeout(render,t.t0+SPIN-now()+30)}
   }else if(ph==="end"){
+}else if(ph==="end"){
     const pos=S.pos||[0,0,0],fin=S.fin||[],r=T.map((t,i)=>({t,i,p:pos[i]||0,s:(sizes[i]||1)*need,f:fin.indexOf(i)})).sort((a,b)=>((a.f<0)-(b.f<0))||(a.f-b.f)||(b.p/b.s-a.p/a.s)||(b.p-a.p));
-    h+=`<h2>${r[0].f>=0?"Gana el "+r[0].t.n:"Partida terminada: va primero el "+r[0].t.n}</h2><ul class="rank">${r.map((x,j)=>`<li style="--c:${x.t.c}"><span>${j+1}. ${x.t.n}${x.f>=0?" ✅":""}</span><b>${x.p} / ${x.s}</b></li>`).join("")}</ul>`;
-    if(host)h+=`<div class="row"><button id="again">Nueva partida con los mismos jugadores</button></div>`;
+    const w=r[0],won=w.f>=0;
+    if(view==="score"){
+      h+=`<h2>Marcador final</h2>`+r.map((x,j)=>`<div class="score" style="--c:${x.t.c}"><div class="sn">${j+1}. ${x.t.n}${x.f>=0?" ✅":""}<span class="mem">${ids.filter(id=>P[id].t===x.i).map(id=>(P[id].i||"")+" "+esc(P[id].n)+" ("+Math.min(P[id].ok||0,need)+"/"+need+")").join(" · ")}</span></div><div class="sbar"><i style="width:${Math.min(100,x.p/x.s*100)}%"></i></div><div class="sp">${x.p}</div></div>`).join("");
+      h+=`<h3>Aciertos por jugador</h3><ul class="chips">${ids.slice().sort((a,b)=>(P[b].ok||0)-(P[a].ok||0)).map(id=>`<li><span class="ic">${P[id].i||""}</span>${esc(P[id].n)} · ${P[id].ok||0}</li>`).join("")}</ul><div class="row"><button data-v="score">Volver al ganador</button></div>`;
+    }else{
+      if(!window._cf){window._cf=1;setTimeout(confetti,50)}
+      h+=`<div class="win" style="--c:${w.t.c}"><div class="trophy">🏆</div><p class="sub" style="margin:0">${won?"¡Tenemos ganador!":"Partida terminada"}</p><h2 class="wn">${won?"":"Va primero: "}${w.t.n}</h2><div class="wm">${ids.filter(id=>P[id].t===w.i).map(id=>`<span class="wp"><span class="ic">${P[id].i||""}</span>${esc(P[id].n)}</span>`).join("")}</div><div class="wf">🐸</div><p class="sub" style="margin:0">${w.p} de ${w.s} aciertos</p></div>`;
+      h+=`<ul class="rank">${r.map((x,j)=>`<li style="--c:${x.t.c}"><span>${j+1}. ${x.t.n}${x.f>=0?" ✅":""}</span><b>${x.p} / ${x.s}</b></li>`).join("")}</ul>`;
+      h+=`<div class="row"><button data-v="score">Ver marcador</button>`+(host?`<button id="again">Nueva partida con los mismos jugadores</button><button id="close" class="ghost">Cerrar sala y salir</button>`:`<button id="exit2" class="ghost">Salir y unirme a otra partida</button>`)+`</div>`;
+      if(!host)h+=`<p class="sub" style="margin-top:12px">Si el presentador empieza otra partida con los mismos jugadores, te quedas aquí.</p>`;
+    }
   }
-  $("#room").innerHTML=h;
+$("#room").innerHTML=h;
   const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
-  on("#exit",()=>leave());document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{view=view===b.dataset.v?null:b.dataset.v;render()});on("#draw",drawTeams);on("#redo",drawTeams);on("#start",startGame);on("#next",nextTurn);on("#again",newGame);document.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>update(R(),{target:+b.dataset.l}));on("#stop",()=>{if(confirm("¿Terminar la partida ahora?"))update(R(),{phase:"end"})});
+  on("#exit",()=>leave());document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{view=view===b.dataset.v?null:b.dataset.v;render()});on("#draw",drawTeams);on("#redo",drawTeams);on("#start",startGame);on("#next",nextTurn);on("#again",newGame);document.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>update(R(),{target:+b.dataset.l}));on("#stop",()=>{if(confirm("¿Terminar la partida ahora?"))update(R(),{phase:"end"})});on("#close",closeRoom);on("#exit2",exitPlayer);
   document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
 }
 
